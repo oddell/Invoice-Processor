@@ -19,16 +19,22 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = applicationPath+'\\bright-velocit
 project_id = "bright-velocity-333609"
 location = "eu"  # Format is 'us' or 'eu'
 processor_id = "fab48bf677935aeb"  # Create processor in Cloud Console
+companyName = "mildren"
 
 class Processor():
+  
+    """AI, information handling and organisation"""
+
     def __init__(self):
+        #Class Preperation
+
         Processor.reject = False
         Processor.contractList = Utilities.FindContractList()
 
     def DoProcurementAI(project_id: str, location: str, processor_id: str, file_path: str):
 
+        # Modified DocumentAI quickstart
 
-        # You must set the api_endpoint if you use a location other than 'us', e.g.:
         opts = {}
         if location == "eu":
             opts = {"api_endpoint": "eu-documentai.googleapis.com"}
@@ -54,22 +60,24 @@ class Processor():
         document = result.document
         entities = document.entities
 
-        # For a full list of Document object attributes, please reference this page: https://googleapis.dev/python/documentai/latest/_modules/google/cloud/documentai_v1beta3/types/document.html#Document
+        # Prepare attributes
         types = []
         values = []
         confidence = []
         normalizedValues = []
-        # Read the text recognition output from the processor
 
+        # Read the text recognition output from the processor
         for entity in entities:
             types.append(entity.type_)
             values.append(entity.mention_text)
             confidence.append(round(entity.confidence,4))
             normalizedValues.append(entity.normalized_value.text)
-        
+
+        # Prepare dictionary of info -> MAKE INTO OBJECT  
         invoiceInfo = dict(zip(types, values))
         invoiceNormalizedInfo = dict(zip(types, normalizedValues))
 
+        #Populate with normalized values if possible
         for key in invoiceNormalizedInfo:
             if invoiceNormalizedInfo[key] != "":
                 invoiceInfo[key] = invoiceNormalizedInfo[key]
@@ -77,6 +85,8 @@ class Processor():
         return(invoiceInfo)
 
     def FindContractNumber(invoiceInfo):
+
+        #Find current projects -> MAKE CURRENT -ACTIVE- PROJECTS
         projectList = Utilities.contractList
         found = False
         for project in projectList:
@@ -95,17 +105,20 @@ class Processor():
         return invoiceInfo
 
     def TroubleshootInfo(invoiceInfo):
+        #Prepare wanted info:
         keys = ("invoice_date", "supplier_name", "invoice_id", "line_item", "net_amount","project_no")
         invoiceInfo["IsHire"] = "Purchase"
-        chars = "£Ł\\,"
-        pdfopen = False
+        chars = "£Ł\\,L"
         for key in keys:
             try:
                 invoiceInfo[key]
             except KeyError:
                 found = False
+
+                #Find Net Amount from Tax - Vat
                 if key == "net_amount":
                     try:
+                        #Remove characters that look like £
                         for c in chars:
                             invoiceInfo['total_amount'] = invoiceInfo['total_amount'].replace(c, "")
                             invoiceInfo['total_tax_amount'] = invoiceInfo['total_tax_amount'].replace(c,"")
@@ -118,6 +131,8 @@ class Processor():
                             
                     except:
                         continue
+                
+                #If no ID use Order Number
                 if  key == "invoice_id":
                     try:
                         invoiceInfo[key] = invoiceInfo["purchase_order"]
@@ -131,11 +146,12 @@ class Processor():
                     Processor.reject = True
 
                 
-        
-        if "mildren" in str(invoiceInfo["supplier_name"]).lower():
+        #Supplier name can not be company name
+        if companyName in str(invoiceInfo["supplier_name"]).lower():
             invoiceInfo["supplier_name"] = "Error"
             Processor.reject = True
-
+        
+        #Tidy Net
         try:
             if invoiceInfo['net_amount']:   
                 try:
@@ -151,17 +167,15 @@ class Processor():
             invoiceInfo['excel_date'] = (pd.to_datetime(invoiceInfo['invoice_date'], dayfirst=True))
             invoiceInfo['invoice_date'] = (pd.to_datetime(invoiceInfo['excel_date'], dayfirst=True)).strftime("%b %Y")
             
-
         except:
             invoiceInfo['excel_date'] = "Error"
             Processor.reject = True
 
+        #Strip new lines
         try:
             invoiceInfo["invoice_id"]=invoiceInfo["invoice_id"].replace("\n","")
         except:
             pass
-
-        
 
         #Check if hire invoice
         for information in invoiceInfo.values():
@@ -171,24 +185,24 @@ class Processor():
     
     def RejectPDF(invoiceInfo, inputPDFPath):
         
-        #Variables
+        #Prepare pdf and csv outputs
         rejectNumber = (len(os.listdir(applicationPath+"/Rejected PDFs/"))/2) + 1
         pdfOutputPath = applicationPath+"/Rejected PDFs/Reject "+str(rejectNumber)+".pdf"
         csvOutputPath = applicationPath+"/Rejected PDFs/Reject "+str(rejectNumber)+".csv"
         
-        print(invoiceInfo)
-        #Write Info
+        #Write InvoiceInfo to csv
         w = csv.writer(open(csvOutputPath, "w"))
         for key, val in invoiceInfo.items():
             try:
                 w.writerow([key, val])
             except:
                 pass
+        
+        print("Reached Reject #"+str(rejectNumber))
 
-        print("Reached Reject")
-
+        #Move pdf to temp storage
         shutil.move(inputPDFPath, pdfOutputPath)
-        print(pdfOutputPath)
+
 
 
         pass
@@ -242,11 +256,14 @@ class Processor():
 
 class Utilities():
 
+    """Generic business utilities"""
+
     def __init__(self) -> None:
         pass
 
     def FindContractPath(contractNumber):
         
+        #Uses project number to find path in business drive
         filePath = "M:\Contracts Folder"
         
         for dirNames in os.listdir(filePath):             
@@ -259,6 +276,8 @@ class Utilities():
         return filePath
     
     def FindContractList():
+        
+        #Finds existing contracts -> Needs to be active contracts
         filePath = "M:\Contracts Folder"
         contractList = []
         for dirNames in os.listdir(filePath):             
@@ -272,6 +291,9 @@ class Utilities():
         Utilities.contractList = contractList
     
     def SplitPDFs():
+        #Splits large PDF into individual
+        #Needs to allow user to reject reciepts before AI
+        
         inputFolderPath = applicationPath+"/PDF Input/"
         inputPDFPathList = [inputFolderPath+f for f in os.listdir(inputFolderPath) if os.path.isfile(os.path.join(inputFolderPath,f))]
 
@@ -288,7 +310,7 @@ class Utilities():
 
         return [inputFolderPath+f for f in os.listdir(inputFolderPath) if os.path.isfile(os.path.join(inputFolderPath,f))]
         
-   
+
 
 def Main():
     inputPDFPathList = Utilities.SplitPDFs()
