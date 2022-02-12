@@ -11,15 +11,15 @@ from google.cloud import documentai
 
 from openpyxl import load_workbook
 
-os.chdir(r"M:\Contracts Folder")
-applicationPath = r"M:\Contracts Folder\Utilities\Invoice Processor"
+os.chdir(ros.environ['ROOT_DIR'])
+applicationPath = os.environ['APPLICATION_PATH']
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = applicationPath+'\\bright-velocity-333609-6081a4699c11.json'
 
-project_id = "bright-velocity-333609"
-location = "eu"  # Format is 'us' or 'eu'
-processor_id = "fab48bf677935aeb"  # Create processor in Cloud Console
-companyName = "mildren"
+project_id = os.environ['PROJECT_ID']
+location = os.environ['PROCESSOR_LOCATION']  # Format is 'us' or 'eu'
+processor_id = os.environ['PROCESSOR_ID']  # Create processor in Cloud Console
+companyName = os.environ['COMPANY_NAME']
 
 class Processor():
   
