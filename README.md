@@ -32,3 +32,7 @@ Implemented the system handling 2000 invoices per month reducing costs by 75% an
 The invoice is moved to its project specific organised by date and the inforamation is populated in a linked excel file.
 
 <img src="https://github.com/oddell/Invoice-Processor/blob/main/Images/Demo.PNG?raw=true" /> 
+
+If information can not be found the user may later manually process the document filling in only the items not found.
+
+<img src="https://github.com/oddell/Invoice-Processor/blob/main/Images/Reject.PNG?raw=true" /> 
