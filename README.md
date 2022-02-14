@@ -6,7 +6,7 @@ Researched, designed, and developed a solution using Python and Google Cloud Pla
 
 Implemented the system handling 2000 invoices  reducing costs by 75% and procurement workload by 95%
 
-![alt text](https://github.com/oddell/Invoice-Processor/blob/Images/Cost%20Time%20Table.PNG?raw=true)
+![alt text](https://github.com/oddell/Invoice-Processor/blob/main/Images/Cost%20Time%20Table.PNG?raw=true)
 
 
 ## Motivation
