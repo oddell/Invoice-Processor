@@ -27,3 +27,6 @@ Implemented the system handling 2000 invoices per month reducing costs by 75% an
 - Automatic Global and Project Specific Invoice Reconcilliation Excel
 - Automatic Archiving
 
+## Example
+
+<img src="https://github.com/oddell/Invoice-Processor/blob/main/Images/Demo.PNG?raw=true" /> 
