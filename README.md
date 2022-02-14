@@ -3,8 +3,11 @@
 <img align="right" width="47%" src="https://github.com/oddell/Invoice-Processor/blob/main/Images/Cost%20Time%20Table.PNG?raw=true" /> 
 
 This program recieves PDF's of invoices and using Procurement Document AI scans and organises the information into a database for a cost value report.
+
 The invoices are automatically archived by date and project number. Their path is linked to their invoice ID in the excel for ease of access.
+
 A global invoice reconcilliation is also generated for contract managers overview.
+
 A graphical interface for manually entering invoices with information that can not be found is included. 
 
 
