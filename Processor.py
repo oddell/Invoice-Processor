@@ -14,7 +14,7 @@ from openpyxl import load_workbook
 os.chdir(ros.environ['ROOT_DIR'])
 applicationPath = os.environ['APPLICATION_PATH']
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = applicationPath+'\\bright-velocity-333609-6081a4699c11.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = applicationPath+os.environ['JSON_FILENAME']
 
 project_id = os.environ['PROJECT_ID']
 location = os.environ['PROCESSOR_LOCATION']  # Format is 'us' or 'eu'
